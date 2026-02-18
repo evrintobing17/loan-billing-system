@@ -214,12 +214,6 @@ All endpoints are prefixed with ***/api/v1***.
 │       └── client.go
 └── README.md
 ```
-<!-- 
-## TESTING
-Run unit tests:
-   go test ./...
-
-Integration tests (requiring real PostgreSQL/Redis) can be added separately. -->
 
 ACKNOWLEDGEMENTS
 ----------------
