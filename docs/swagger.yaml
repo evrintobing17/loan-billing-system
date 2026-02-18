@@ -1,0 +1,186 @@
+basePath: /api/v1
+definitions:
+  models.CreateLoanRequest:
+    properties:
+      interest_rate:
+        type: number
+      principal:
+        type: number
+      start_date:
+        type: string
+      term_weeks:
+        type: integer
+    required:
+    - interest_rate
+    - principal
+    - term_weeks
+    type: object
+  models.Loan:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      interest_rate:
+        type: number
+      is_active:
+        type: string
+      principal:
+        type: number
+      start_date:
+        type: string
+      term_weeks:
+        type: integer
+      weekly_amount:
+        type: number
+    type: object
+  models.PaymentRequest:
+    properties:
+      amount:
+        type: number
+    required:
+    - amount
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Loan billing system with weekly installments.
+  title: Loan Billing API
+  version: "1.0"
+paths:
+  /loans:
+    post:
+      consumes:
+      - application/json
+      description: Create a loan with given terms. Generates weekly installments.
+      parameters:
+      - description: Loan details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateLoanRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Loan'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new loan
+      tags:
+      - loans
+  /loans/{id}/delinquent:
+    get:
+      parameters:
+      - description: Loan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Check if a borrower is delinquent
+      tags:
+      - loans
+  /loans/{id}/outstanding:
+    get:
+      parameters:
+      - description: Loan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              format: float64
+              type: number
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get outstanding amount for a loan
+      tags:
+      - loans
+  /loans/{id}/payments:
+    post:
+      consumes:
+      - application/json
+      description: Process a payment. Idempotency-Key header prevents duplicates.
+      parameters:
+      - description: Loan ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Payment amount
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.PaymentRequest'
+      - description: Unique idempotency key
+        in: header
+        name: Idempotency-Key
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Make a payment against a loan
+      tags:
+      - payments
+swagger: "2.0"
