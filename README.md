@@ -122,6 +122,12 @@ All endpoints are prefixed with ***/api/v1***.
    REDIS_ADDR={your_redis_addr}
    PORT=8080
    ```
+   **OR**
+
+   Copy from .env.example for default value
+   ```bash
+   cp .env.example .env
+   ```
 
 3. Start PostgreSQL and Redis (using Docker)
    ### PostgreSQL
